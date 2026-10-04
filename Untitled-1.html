@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS | Creative Technology & AI</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        dark: '#05030A',
+                        darker: '#030206',
+                        surface: 'rgba(255, 255, 255, 0.03)',
+                        primary: '#7C3AED',
+                        secondary: '#8B5CF6',
+                        accent: '#C026D3',
+                        electric: '#6366F1'
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-color: #05030A;
+            --primary: #7C3AED;
+            --secondary: #8B5CF6;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: #ffffff;
+            cursor: none; /* Custom cursor */
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(124, 58, 237, 0.3);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(124, 58, 237, 0.6);
+        }
+
+        .cursor-dot, .cursor-outline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .cursor-dot {
+            width: 6px;
+            height: 6px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+
+        .cursor-outline {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(139, 92, 246, 0.5);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+            mix-blend-mode: screen;
+        }
+
+        .cursor-hover .cursor-dot {
+            width: 12px;
+            height: 12px;
+            background-color: var(--secondary);
+        }
+        .cursor-hover .cursor-outline {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(124, 58, 237, 0.1);
+            border-color: rgba(124, 58, 237, 0.8);
+        }
+
+        .glass {
+            background: rgba(15, 10, 25, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .glass-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(139, 92, 246, 0.3);
+            background: linear-gradient(145deg, rgba(139,92,246,0.08) 0%, rgba(255,255,255,0.02) 100%);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px -10px rgba(124, 58, 237, 0.3);
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #fff, #A1A1AA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .text-gradient-purple {
+            background: linear-gradient(to right, #8B5CF6, #C026D3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .ambient-orb {
+            position: absolute;
+            width: 60vw;
+            height: 60vw;
+            max-width: 800px;
+            max-height: 800px;
+            background: radial-gradient(circle at 30% 30%, rgba(124, 58, 237, 0.4), rgba(192, 38, 211, 0.1), transparent 60%);
+            filter: blur(60px);
+            border-radius: 50%;
+            animation: float 20s ease-in-out infinite alternate;
+            z-index: 0;
+            pointer-events: none;
+            mix-blend-mode: screen;
+        }
+
+        .ambient-orb-2 {
+            position: absolute;
+            width: 40vw;
+            height: 40vw;
+            max-width: 600px;
+            max-height: 600px;
+            background: radial-gradient(circle at 70% 70%, rgba(99, 102, 241, 0.3), transparent 50%);
+            filter: blur(50px);
+            border-radius: 50%;
+            animation: float 25s ease-in-out infinite alternate-reverse;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Liquid geometric shape for hero */
+        .liquid-shape {
+            position: absolute;
+            top: 50%;
+            right: 10%;
+            transform: translateY(-50%);
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(45deg, #7C3AED, #C026D3, #6366F1);
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            animation: morph 8s ease-in-out infinite, spin 20s linear infinite;
+            filter: blur(2px) drop-shadow(0 0 40px rgba(124, 58, 237, 0.4));
+            opacity: 0.8;
+            mix-blend-mode: color-dodge;
+            z-index: 1;
+        }
+
+        @keyframes morph {
+            0% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+            34% { border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%; }
+            67% { border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%; }
+            100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+        }
+
+        @keyframes spin {
+            from { transform: translateY(-50%) rotate(0deg); }
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(5%, 10%) scale(1.1); }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+
+        .stagger-text span {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .stagger-text.active span {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Noise overlay */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Canvas particles */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        /* Magnetic Button */
+        .magnetic-btn {
+            position: relative;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .work-img-wrapper {
+            overflow: hidden;
+        }
+        .work-img-wrapper img {
+            transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), filter 0.7s ease;
+            filter: grayscale(80%) brightness(0.8);
+        }
+        .glass-card:hover .work-img-wrapper img {
+            transform: scale(1.05);
+            filter: grayscale(0%) brightness(1);
+        }
+        .work-arrow {
+            transition: transform 0.4s ease, opacity 0.4s ease;
+            opacity: 0.5;
+        }
+        .glass-card:hover .work-arrow {
+            transform: translate(5px, -5px);
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .liquid-shape {
+                width: 250px;
+                height: 250px;
+                right: -50px;
+                top: 70%;
+            }
+            .cursor-dot, .cursor-outline {
+                display: none; /* Disable custom cursor on mobile */
+            }
+            body {
+                cursor: auto;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-primary selection:text-white">
+
+    <div class="noise"></div>
+    <canvas id="particle-canvas"></canvas>
+    
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <nav class="fixed top-0 w-full z-40 px-6 py-4 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto glass rounded-2xl px-6 py-3 flex justify-between items-center">
+            <a href="#" class="text-2xl font-display font-bold tracking-tighter text-white hover-target">
+                NEXUS<span class="text-primary">.</span>
+            </a>
+            
+            <div class="hidden md:flex space-x-8 text-sm font-medium text-gray-300 tracking-wide">
+                <a href="#work" class="hover:text-white transition-colors hover-target relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[1px] after:bg-primary hover:after:w-full after:transition-all after:duration-300">WORK</a>
+                <a href="#services" class="hover:text-white transition-colors hover-target relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[1px] after:bg-primary hover:after:w-full after:transition-all after:duration-300">SERVICES</a>
+                <a href="#about" class="hover:text-white transition-colors hover-target relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[1px] after:bg-primary hover:after:w-full after:transition-all after:duration-300">ABOUT</a>
+            </div>
+
+            <div class="hidden md:block magnetic-btn hover-target">
+                <a href="#contact" class="px-6 py-2 rounded-full border border-gray-600 hover:border-primary bg-white/5 hover:bg-primary/10 transition-all duration-300 text-sm font-medium tracking-wide">
+                    LET'S TALK
+                </a>
+            </div>
+
+            <!-- Mobile menu button -->
+            <button class="md:hidden text-white hover-target focus:outline-none" id="mobile-menu-btn">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+        </div>
+    </nav>
+
+    <main>
+        <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+            <!-- Background Orbs -->
+            <div class="ambient-orb top-[-10%] left-[-10%]"></div>
+            <div class="ambient-orb-2 bottom-[-10%] right-[-10%]"></div>
+            
+            <!-- Abstract liquid shape -->
+            <div class="liquid-shape hidden md:block"></div>
+
+            <div class="max-w-7xl w-full mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center">
+                
+                <!-- Hero Content -->
+                <div class="w-full md:w-2/3 flex flex-col justify-center items-start pt-10 md:pt-0">
+                    <div class="reveal">
+                        <p class="text-primary font-medium tracking-[0.2em] text-xs md:text-sm uppercase mb-4 md:mb-6 flex items-center">
+                            <span class="w-8 h-[1px] bg-primary mr-4"></span>
+                            Creative Technology Studio
+                        </p>
+                    </div>
+                    
+                    <h1 class="font-display font-bold text-5xl md:text-7xl lg:text-[7rem] leading-[0.9] tracking-tighter mb-6">
+                        <div class="reveal reveal-delay-1">WE BUILD</div>
+                        <div class="reveal reveal-delay-2 text-gradient">WHAT'S</div>
+                        <div class="reveal reveal-delay-3 text-gradient-purple">NEXT.</div>
+                    </h1>
+                    
+                    <p class="reveal reveal-delay-3 text-gray-400 font-sans text-base md:text-lg max-w-md mb-10 leading-relaxed">
+                        We design and develop premium digital experiences, AI interfaces, and futuristic platforms for the world's most innovative brands.
+                    </p>
+                    
+                    <div class="reveal reveal-delay-3 flex flex-wrap gap-4">
+                        <a href="#work" class="magnetic-btn hover-target group relative px-8 py-4 bg-white text-black font-semibold rounded-full overflow-hidden">
+                            <span class="relative z-10">EXPLORE WORK</span>
+                            <div class="absolute inset-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-0"></div>
+                            <span class="absolute inset-0 z-10 flex justify-center items-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">EXPLORE WORK</span>
+                        </a>
+                        
+                        <a href="#services" class="magnetic-btn hover-target px-8 py-4 rounded-full border border-gray-700 hover:border-gray-400 text-white font-medium transition-colors">
+                            OUR SERVICES
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Scroll indicator -->
+            <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center opacity-50 animate-bounce">
+                <span class="text-[10px] tracking-widest uppercase mb-2">Scroll</span>
+                <div class="w-[1px] h-8 bg-gradient-to-b from-white to-transparent"></div>
+            </div>
+        </section>
+
+        <section id="about" class="py-32 relative z-10 border-t border-white/5 bg-darker/50">
+            <div class="max-w-5xl mx-auto px-6 text-center">
+                <p class="font-display text-2xl md:text-4xl lg:text-5xl leading-tight font-light text-gray-300 stagger-text" id="intro-text">
+                    We blur the line between <span class="text-white font-medium">art</span> and <span class="text-white font-medium">engineering</span>. Our studio crafts highly immersive digital environments powered by next-generation technology.
+                </p>
+            </div>
+        </section>
+
+        <section id="services" class="py-32 relative z-10">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-16 reveal">
+                    <div>
+                        <h2 class="font-display text-4xl md:text-5xl font-bold tracking-tighter mb-4">CAPABILITIES</h2>
+                        <p class="text-gray-400 max-w-sm">End-to-end digital product design, AI integration, and creative engineering.</p>
+                    </div>
+                    <a href="#" class="hidden md:inline-flex items-center text-sm font-medium text-primary hover:text-white transition-colors hover-target mt-6 md:mt-0">
+                        VIEW ALL SERVICES <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Service 1 -->
+                    <div class="glass-card p-8 rounded-3xl hover-target reveal">
+                        <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-8 border border-primary/20">
+                            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <h3 class="font-display text-xl font-semibold mb-3 text-white">Digital Experience</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-6">Immersive websites, WebGL experiences, and award-winning front-end architecture that captivates users.</p>
+                        <ul class="space-y-2 text-xs text-gray-500 font-medium">
+                            <li>+ Web Design & Development</li>
+                            <li>+ 3D / WebGL Interactive</li>
+                            <li>+ E-Commerce Platforms</li>
+                        </ul>
+                    </div>
+
+                    <!-- Service 2 -->
+                    <div class="glass-card p-8 rounded-3xl hover-target reveal reveal-delay-1">
+                        <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mb-8 border border-accent/20">
+                            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                        </div>
+                        <h3 class="font-display text-xl font-semibold mb-3 text-white">AI Interfaces</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-6">Designing the future of human-computer interaction for SaaS products and generative AI startups.</p>
+                        <ul class="space-y-2 text-xs text-gray-500 font-medium">
+                            <li>+ AI Product Strategy</li>
+                            <li>+ Conversational UI</li>
+                            <li>+ Dashboard Design</li>
+                        </ul>
+                    </div>
+
+                    <!-- Service 3 -->
+                    <div class="glass-card p-8 rounded-3xl hover-target reveal reveal-delay-2">
+                        <div class="w-12 h-12 rounded-full bg-electric/10 flex items-center justify-center mb-8 border border-electric/20">
+                            <svg class="w-6 h-6 text-electric" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
+                        </div>
+                        <h3 class="font-display text-xl font-semibold mb-3 text-white">Brand Identity</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-6">Futuristic branding, motion design, and visual systems that make tech companies stand out.</p>
+                        <ul class="space-y-2 text-xs text-gray-500 font-medium">
+                            <li>+ Visual Identity</li>
+                            <li>+ Motion Graphics</li>
+                            <li>+ Design Systems</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="work" class="py-32 relative z-10 bg-darker">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="mb-16 reveal">
+                    <p class="text-primary text-xs font-bold tracking-widest uppercase mb-2">Selected Cases</p>
+                    <h2 class="font-display text-4xl md:text-6xl font-bold tracking-tighter">FEATURED WORK</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+                    
+                    <!-- Project 1 (Large, spans full width on mobile, left col on desktop) -->
+                    <div class="glass-card rounded-2xl p-4 hover-target cursor-pointer group reveal">
+                        <div class="work-img-wrapper rounded-xl aspect-[4/3] bg-gray-900 mb-6 relative">
+                            <img src="https://placehold.co/800x600/1a1a2e/ffffff?text=SYNTHESIS+AI" alt="Project 1" class="w-full h-full object-cover">
+                            <div class="absolute top-4 left-4 bg-black/50 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold tracking-wider text-white border border-white/10">SaaS Platform</div>
+                        </div>
+                        <div class="px-2 flex justify-between items-start">
+                            <div>
+                                <h3 class="font-display text-2xl font-bold mb-2">Synthesis AI</h3>
+                                <p class="text-gray-400 text-sm">Generative workspace interface.</p>
+                            </div>
+                            <div class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center work-arrow bg-white/5">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project 2 (Shifted down for asymmetrical layout) -->
+                    <div class="glass-card rounded-2xl p-4 hover-target cursor-pointer group reveal reveal-delay-1 md:mt-24">
+                        <div class="work-img-wrapper rounded-xl aspect-[4/3] bg-gray-900 mb-6 relative">
+                            <img src="https://placehold.co/800x600/0f0c29/ffffff?text=LUMEN+WEB3" alt="Project 2" class="w-full h-full object-cover">
+                            <div class="absolute top-4 left-4 bg-black/50 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold tracking-wider text-white border border-white/10">Web3 / Crypto</div>
+                        </div>
+                        <div class="px-2 flex justify-between items-start">
+                            <div>
+                                <h3 class="font-display text-2xl font-bold mb-2">Lumen Exchange</h3>
+                                <p class="text-gray-400 text-sm">Cinematic platform for digital assets.</p>
+                            </div>
+                            <div class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center work-arrow bg-white/5">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Project 3 (Full width span) -->
+                    <div class="glass-card rounded-2xl p-4 hover-target cursor-pointer group reveal md:col-span-2">
+                        <div class="work-img-wrapper rounded-xl aspect-[21/9] bg-gray-900 mb-6 relative">
+                            <img src="https://placehold.co/1200x500/2a0845/ffffff?text=NEURAL+DYNAMICS" alt="Project 3" class="w-full h-full object-cover">
+                            <div class="absolute top-4 left-4 bg-black/50 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold tracking-wider text-white border border-white/10">Creative Development</div>
+                        </div>
+                        <div class="px-2 flex justify-between items-start">
+                            <div>
+                                <h3 class="font-display text-2xl font-bold mb-2">Neural Dynamics</h3>
+                                <p class="text-gray-400 text-sm">Award-winning immersive brand experience.</p>
+                            </div>
+                            <div class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center work-arrow bg-white/5">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section class="py-32 relative z-10 border-t border-b border-white/5 bg-dark">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-white/5">
+                    
+                    <div class="text-center px-4 reveal">
+                        <div class="text-4xl md:text-6xl font-display font-bold text-white mb-2 counter" data-target="45">0</div>
+                        <div class="text-xs text-gray-500 uppercase tracking-widest">Awards Won</div>
+                    </div>
+                    
+                    <div class="text-center px-4 reveal reveal-delay-1">
+                        <div class="text-4xl md:text-6xl font-display font-bold text-white mb-2 counter" data-target="120">0</div>
+                        <div class="text-xs text-gray-500 uppercase tracking-widest">Projects</div>
+                    </div>
+                    
+                    <div class="text-center px-4 reveal reveal-delay-2">
+                        <div class="text-4xl md:text-6xl font-display font-bold text-white mb-2 counter" data-target="15">0</div>
+                        <div class="text-xs text-gray-500 uppercase tracking-widest">Global Team</div>
+                    </div>
+
+                    <div class="text-center px-4 reveal reveal-delay-3">
+                        <div class="text-4xl md:text-6xl font-display font-bold text-white mb-2">2026</div>
+                        <div class="text-xs text-gray-500 uppercase tracking-widest">Est. Year</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer id="contact" class="relative z-10 pt-32 pb-10 overflow-hidden">
+            <!-- Footer glow -->
+            <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-[400px] bg-primary/20 blur-[100px] rounded-full pointer-events-none z-0"></div>
+
+            <div class="max-w-7xl mx-auto px-6 relative z-10">
+                <div class="flex flex-col items-center text-center mb-32 reveal">
+                    <p class="text-primary text-sm font-bold tracking-widest uppercase mb-6">Ready to Innovate?</p>
+                    <h2 class="font-display text-5xl md:text-8xl font-bold tracking-tighter mb-10 hover-target">
+                        LET'S CREATE<br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">TOGETHER.</span>
+                    </h2>
+                    <a href="mailto:hello@nexus.studio" class="magnetic-btn hover-target px-10 py-5 bg-white text-black font-semibold rounded-full hover:bg-gray-200 transition-colors text-lg">
+                        START A PROJECT
+                    </a>
+                </div>
+
+                <div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/10 text-sm text-gray-500">
+                    <p>&copy; 2026 NEXUS Studio. All rights reserved.</p>
+                    <div class="flex space-x-6 mt-4 md:mt-0">
+                        <a href="#" class="hover:text-white transition-colors hover-target">Twitter</a>
+                        <a href="#" class="hover:text-white transition-colors hover-target">LinkedIn</a>
+                        <a href="#" class="hover:text-white transition-colors hover-target">Instagram</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- CUSTOM CURSOR ---
+            const cursorDot = document.querySelector('.cursor-dot');
+            const cursorOutline = document.querySelector('.cursor-outline');
+            const hoverTargets = document.querySelectorAll('.hover-target');
+
+            // Only run cursor on non-touch devices
+            if (window.matchMedia("(pointer: fine)").matches) {
+                let mouseX = 0, mouseY = 0;
+                let outlineX = 0, outlineY = 0;
+
+                window.addEventListener('mousemove', (e) => {
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                    
+                    // Instant dot update
+                    cursorDot.style.left = `${mouseX}px`;
+                    cursorDot.style.top = `${mouseY}px`;
+                });
+
+                // Smooth outline follow using requestAnimationFrame
+                const animateCursor = () => {
+                    let dx = mouseX - outlineX;
+                    let dy = mouseY - outlineY;
+                    
+                    outlineX += dx * 0.15; // Easing factor
+                    outlineY += dy * 0.15;
+                    
+                    cursorOutline.style.left = `${outlineX}px`;
+                    cursorOutline.style.top = `${outlineY}px`;
+                    
+                    requestAnimationFrame(animateCursor);
+                };
+                animateCursor();
+
+                // Hover states
+                hoverTargets.forEach(target => {
+                    target.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+                    target.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+                });
+            }
+
+            // --- MAGNETIC BUTTONS ---
+            const magneticBtns = document.querySelectorAll('.magnetic-btn');
+            
+            magneticBtns.forEach(btn => {
+                btn.addEventListener('mousemove', (e) => {
+                    const rect = btn.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    
+                    // Move button slightly towards mouse
+                    btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+                });
+                
+                btn.addEventListener('mouseleave', () => {
+                    btn.style.transform = 'translate(0px, 0px)';
+                });
+            });
+
+            // --- SCROLL REVEAL (Intersection Observer) ---
+            const revealElements = document.querySelectorAll('.reveal');
+            
+            const revealOptions = {
+                threshold: 0.1,
+                rootMargin: "0px 0px -50px 0px"
+            };
+
+            const revealObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        // Optional: unobserve after reveal
+                        // observer.unobserve(entry.target); 
+                    }
+                });
+            }, revealOptions);
+
+            revealElements.forEach(el => revealObserver.observe(el));
+
+            // --- STAGGER TEXT REVEAL ---
+            const introText = document.getElementById('intro-text');
+            if (introText) {
+                // Wrap words in spans for stagger effect
+                const words = introText.innerText.split(' ');
+                introText.innerHTML = '';
+                words.forEach((word, i) => {
+                    const span = document.createElement('span');
+                    // Retain inner HTML if it contained spans before (simplified for this demo)
+                    span.innerText = word + ' ';
+                    span.style.transitionDelay = `${i * 0.05}s`;
+                    introText.appendChild(span);
+                });
+
+                const textObserver = new IntersectionObserver((entries) => {
+                    if(entries[0].isIntersecting) {
+                        introText.classList.add('active');
+                    }
+                });
+                textObserver.observe(introText);
+            }
+
+            // --- NAVBAR GLASS EFFECT ON SCROLL ---
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('backdrop-blur-md', 'bg-dark/50');
+                    navbar.classList.remove('py-4');
+                    navbar.classList.add('py-2');
+                } else {
+                    navbar.classList.remove('backdrop-blur-md', 'bg-dark/50');
+                    navbar.classList.remove('py-2');
+                    navbar.classList.add('py-4');
+                }
+            });
+
+            // --- NUMBER COUNTER ANIMATION ---
+            const counters = document.querySelectorAll('.counter');
+            let hasCounted = false;
+            
+            const countObserver = new IntersectionObserver((entries) => {
+                if(entries[0].isIntersecting && !hasCounted) {
+                    hasCounted = true;
+                    counters.forEach(counter => {
+                        const target = +counter.getAttribute('data-target');
+                        const duration = 2000; // ms
+                        const step = target / (duration / 16); // 60fps
+                        
+                        let current = 0;
+                        const updateCounter = () => {
+                            current += step;
+                            if(current < target) {
+                                counter.innerText = Math.ceil(current) + (target > 100 ? '+' : '');
+                                requestAnimationFrame(updateCounter);
+                            } else {
+                                counter.innerText = target + (target > 100 ? '+' : '');
+                            }
+                        };
+                        updateCounter();
+                    });
+                }
+            });
+            if(counters.length > 0) countObserver.observe(counters[0]);
+
+            // --- LIGHTWEIGHT PARTICLE CANVAS ---
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            let width, height;
+            let particles = [];
+            
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            }
+            
+            window.addEventListener('resize', resize);
+            resize();
+            
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.size = Math.random() * 1.5;
+                    this.speedX = Math.random() * 0.5 - 0.25;
+                    this.speedY = Math.random() * 0.5 - 0.25;
+                    // Purple to blue hues
+                    this.color = `rgba(${Math.floor(124 + Math.random()*50)}, ${Math.floor(58 + Math.random()*50)}, 237, ${Math.random() * 0.3})`;
+                }
+                
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    
+                    if (this.x > width) this.x = 0;
+                    if (this.x < 0) this.x = width;
+                    if (this.y > height) this.y = 0;
+                    if (this.y < 0) this.y = height;
+                }
+                
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            
+            // Create particles (keep count low for performance)
+            const particleCount = window.innerWidth < 768 ? 30 : 70;
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+            
+            function animateCanvas() {
+                ctx.clearRect(0, 0, width, height);
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+                requestAnimationFrame(animateCanvas);
+            }
+            
+            animateCanvas();
+        });
+    </script>
+</body>
+</html>
